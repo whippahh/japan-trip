@@ -1,3 +1,4 @@
+import { cleanNotes, getFlights, withFlights } from '../lib/flights'
 import { useData } from '../lib/data'
 import { useBreakdown } from '../components/PersonCalc'
 import { Avatar, Money, yen } from '../components/ui'
@@ -41,7 +42,7 @@ function PersonInner({ p }: { p: Person }) {
               <label>Depart <input type="date" value={p.depart || ''} onChange={e => updatePerson(p.id, { depart: e.target.value || null })} /></label>
               <label>Eating style <select value={p.tier} onChange={e => updatePerson(p.id, { tier: e.target.value as Tier })}>{(Object.keys(TIER_LABEL) as Tier[]).map(t => <option key={t} value={t}>{TIER_LABEL[t]}</option>)}</select></label>
             </div>
-            <textarea placeholder="Notes (dietary needs, mobility, anything the group should know)" defaultValue={p.notes || ''} onBlur={e => updatePerson(p.id, { notes: e.target.value || null })} />
+            <textarea placeholder="Notes (dietary needs, mobility, anything the group should know)" defaultValue={cleanNotes(p.notes)} onBlur={e => updatePerson(p.id, { notes: withFlights(e.target.value, getFlights(p.notes)) })} />
             <p className="small muted">Open <a href="#/calc">the calculator</a> to change accommodation and activities for {p.name}.</p>
             <button className="linklike danger" onClick={() => confirm(`Remove ${p.name} from the trip? Their picks and votes are deleted.`) && (deletePerson(p.id), (location.hash = '#/people'))}>Remove {p.name}</button>
             {membersOf(p.household_id).length > 1 && <p className="muted small">Household: {membersOf(p.household_id).map(m => m.name).join(', ')}</p>}

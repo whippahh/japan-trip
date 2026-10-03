@@ -246,3 +246,21 @@ button.lrow:active, a.lrow:active { background: var(--fill); }
 .note-box.ok { background: rgba(47,163,107,.15); }
 
 .adv-photo { height: 150px; } .adv-photo .photo-emoji { font-size: 3rem; }
+
+/* desktop: drag rails with the mouse */
+@media (hover: hover) and (pointer: fine) {
+  .rail-scroll, .rail-chips, .scroll-x, .tour-track { cursor: grab; }
+  .rail-scroll.dragging, .rail-chips.dragging, .scroll-x.dragging, .tour-track.dragging { cursor: grabbing; scroll-snap-type: none !important; scroll-behavior: auto; user-select: none; }
+  .tour-track.dragging, .rail-scroll.dragging { -webkit-user-select: none; }
+}
+
+/* stays timeline */
+.xfer { margin: 2px 0 2px 18px; padding: 8px 12px; border-left: 3px dashed var(--c1, #d9432f); display: flex; flex-direction: column; gap: 2px; font-size: .92rem; }
+.xfer span { color: var(--label); } .xfer small { color: var(--label2); }
+.stint { background: var(--card, #fff); border-radius: 16px; padding: 12px 14px; display: flex; flex-direction: column; gap: 4px; box-shadow: 0 1px 2px rgba(0,0,0,.06); }
+.stint header { display: flex; justify-content: space-between; align-items: baseline; } .stint header span { color: var(--label2); font-size: .85rem; }
+.stint small { color: var(--label2); } .stint small.ok { color: #2e7d32; font-weight: 600; } .stint small.warnt { color: #b35c00; font-weight: 600; }
+.stint-add { display: flex; flex-direction: column; gap: 6px; align-items: flex-start; }
+
+.note-card { background: var(--card, #fff); border-radius: 16px; padding: 12px 14px; box-shadow: 0 1px 2px rgba(0,0,0,.06); display: flex; flex-direction: column; gap: 6px; }
+.note-card p { margin: 0; white-space: pre-wrap; overflow-wrap: anywhere; } .note-card a { color: var(--accent, #d9432f); overflow-wrap: anywhere; }

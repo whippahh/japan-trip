@@ -1,5 +1,7 @@
 import React from 'react'
 import { createRoot } from 'react-dom/client'
+import { installDragScroll } from './lib/dragscroll'
+installDragScroll()
 import { DataProvider } from './lib/data'
 import App from './App'
 import './styles.css'

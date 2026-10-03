@@ -1,0 +1,11 @@
+.print-root { max-width: 780px; margin: 0 auto; padding: 16px; font: 14px/1.45 -apple-system, system-ui, sans-serif; color: #111; background: #fff; min-height: 100vh; }
+.print-bar { display: flex; gap: 12px; align-items: center; justify-content: space-between; margin-bottom: 12px; position: sticky; top: 0; background: #fff; padding: 8px 0; }
+.print-bar button { background: #d9432f; color: #fff; border: 0; border-radius: 10px; padding: 10px 16px; font-weight: 700; cursor: pointer; }
+.print-page { page-break-after: always; break-after: page; padding-bottom: 24px; }
+.print-page:last-of-type { page-break-after: auto; break-after: auto; }
+.print-page h1 { font-size: 24px; margin: 0; } .print-page h2 { font-size: 15px; text-transform: uppercase; letter-spacing: .05em; border-bottom: 2px solid #d9432f; padding-bottom: 3px; margin: 18px 0 8px; }
+.print-page h3 { font-size: 14px; margin: 10px 0 2px; } .print-page ol, .print-page ul { margin: 4px 0; padding-left: 20px; }
+.print-page li i { display: block; color: #555; font-size: 12px; } .print-page .muted { color: #666; }
+.print-page table { width: 100%; border-collapse: collapse; } .print-page td { padding: 4px 6px; border-bottom: 1px solid #ddd; vertical-align: top; } .print-page tr.tot td { font-weight: 700; border-top: 2px solid #111; }
+.pday { break-inside: avoid; }
+@media print { .no-print { display: none !important; } .print-root { padding: 0; max-width: none; } body { background: #fff; } }

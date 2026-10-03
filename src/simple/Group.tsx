@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { useData } from '../lib/data'
+import { useData, NOTE_TYPE } from '../lib/data'
 import { Avatar, yen } from '../components/ui'
 import { ItemPhoto } from '../components/Photo'
 import { AREAS, AREA_META, TYPES } from '../data/meta'
@@ -13,7 +13,7 @@ import { AgePills, AGE_SHORT } from './Sheets'
 import { EFFORT, hrs, ItemTile, useScore } from './Tiles'
 import { useUI } from './ctx'
 
-type Seg = 'family' | 'vote' | 'ideas' | 'tickets'
+type Seg = 'family' | 'vote' | 'ideas' | 'notes' | 'tickets'
 
 /* ───────── Family ───────── */
 function AddMember({ hid, onDone }: { hid: string | null; onDone?: () => void }) {
@@ -231,6 +231,42 @@ function Ideas() {
   )
 }
 
+/* ───────── Notes & links ───────── */
+function Notes() {
+  const { me, boardNotes, addSuggestion, deleteSuggestion, personName } = useData()
+  const [text, setText] = useState('')
+  const [url, setUrl] = useState('')
+  if (!me) return null
+  const add = async () => {
+    if (!text.trim() && !url.trim()) return
+    const u = url.trim() && !/^https?:\/\//i.test(url.trim()) ? 'https://' + url.trim() : url.trim()
+    await addSuggestion({ title: text.trim() || u, url: u || null, area: null, type: NOTE_TYPE, price_adult: 0, price_child: null, note: null, added_by: me.id })
+    setText(''); setUrl('')
+  }
+  const sorted = [...boardNotes].sort((a, b) => (b.created_at || '').localeCompare(a.created_at || ''))
+  return (
+    <>
+      <div className="group pad-in">
+        <label className="fld">Note for the family<textarea rows={2} value={text} placeholder="Flight times, booking refs, reminders, a link someone should read…" onChange={e => setText(e.target.value)} /></label>
+        <label className="fld">Link (optional)<input value={url} placeholder="https://…" onChange={e => setUrl(e.target.value)} /></label>
+        <button className="btn-big" disabled={!text.trim() && !url.trim()} onClick={add}>Post to board</button>
+      </div>
+      {sorted.length === 0 ? <div className="empty-s"><span>📌</span><b>Nothing pinned yet</b><small>Shared notes and links show up here for everyone.</small></div> : (
+        <div className="stack">
+          {sorted.map(n => (
+            <div key={n.id} className="note-card">
+              <div className="idea-by"><Avatar name={personName(n.added_by)} size={20} /> {personName(n.added_by)}
+                <button className="linkbtn danger" onClick={() => confirm('Delete this note?') && deleteSuggestion(n.id)}>Delete</button></div>
+              <p>{n.title}</p>
+              {n.url && <a href={n.url} target="_blank" rel="noopener noreferrer">{n.url.replace(/^https?:\/\/(www\.)?/, '').slice(0, 50)} ›</a>}
+            </div>
+          ))}
+        </div>
+      )}
+    </>
+  )
+}
+
 /* ───────── Tickets ───────── */
 function Tickets() {
   const { me, people, households, tickets, picks, items, getItem, addTicket, updateTicket, deleteTicket, personName } = useData()
@@ -321,13 +357,14 @@ function Tickets() {
 }
 
 export default function Group({ seg: segParam }: { seg?: string }) {
-  const seg: Seg = (['family', 'vote', 'ideas', 'tickets'] as string[]).includes(segParam || '') ? (segParam as Seg) : 'family'
+  const seg: Seg = (['family', 'vote', 'ideas', 'notes', 'tickets'] as string[]).includes(segParam || '') ? (segParam as Seg) : 'family'
   return (
     <div className="s-page">
-      <Segmented value={seg} onChange={s => { location.hash = '#/group/' + s }} options={[['family', 'Family'], ['vote', 'Vote'], ['ideas', 'Ideas'], ['tickets', 'Tickets']]} />
+      <Segmented value={seg} onChange={s => { location.hash = '#/group/' + s }} options={[['family', 'Family'], ['vote', 'Vote'], ['ideas', 'Ideas'], ['notes', 'Notes'], ['tickets', 'Tickets']]} />
       {seg === 'family' && <Family />}
       {seg === 'vote' && <VoteDeck />}
       {seg === 'ideas' && <Ideas />}
+      {seg === 'notes' && <Notes />}
       {seg === 'tickets' && <Tickets />}
     </div>
   )

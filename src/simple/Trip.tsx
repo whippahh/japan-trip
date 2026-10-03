@@ -15,6 +15,10 @@ import { Icon, Segmented, Sheet, Stepper, Toggle } from './kit'
 import { useUI } from './ctx'
 import { hrs } from './Tiles'
 import { autoArrange } from '../lib/autoplan'
+import { stintsFor, suggestStay, transferTip } from '../lib/stayplan'
+import { fmtMins } from '../data/geo'
+import { getFlights, withFlights } from '../lib/flights'
+import { seasonTips } from '../lib/season'
 
 type Seg = 'plan' | 'costs' | 'map' | 'stays'
 
@@ -182,7 +186,25 @@ export default function Trip({ seg: segParam }: { seg?: string }) {
   const go = (s: Seg) => { location.hash = '#/trip/' + s }
   const dayDate = (d: number) => me.arrive ? fmtDate(addDays(me.arrive, d - 1)) : null
   const ids = mapIds || [me.id]
+  const tips = seasonTips(me.arrive, me.depart)
+  const stints = stintsFor(me, picks, getItem)
+  const payingN = Math.max(1, house.filter(p => p.age_group !== 'toddler').length)
+  const needs = stints.map(st => ({ st, add: st.nights > 0 && st.have < st.nights ? suggestStay(st, me.tier, payingN) : null }))
+  const betweenYen = stints.reduce((n, st) => n + (st.arriveBy?.travel.yen || 0), 0)
+  const addStays = (list: { stayId: string; nights: number; sharing: number }[]) => setStays(me.id, [...me.stays, ...list])
   const looseSights = unsched.filter(i => i && (i.kind === 'sight' || i.kind === 'package')).length
+  const arrangeAll = async () => {
+    const a = autoArrange(me, picks, getItem, payingN)
+    if (!a) return
+    const mineNow = picks.filter(k => k.person_id === me.id)
+    const all = mineNow.map(k => ({ item_id: k.item_id, day: a.days.find(d => d.item_id === k.item_id)?.day ?? k.day }))
+    await setPlan(me.id, { picks: all, stays: a.stays, replace: false })
+    for (const h of house.filter(x => x.id !== me.id)) {
+      const keep = all.filter(x => !(h.age_group === 'toddler' && getItem(x.item_id)?.adultsOnly))
+      await setPlan(h.id, { picks: keep, stays: a.stays, replace: true })
+    }
+    setUndo(null)
+  }
   const arrange = async () => {
     const paying = Math.max(1, house.filter(p => p.age_group !== 'toddler').length)
     const a = autoArrange(me, picks, getItem, paying)
@@ -222,10 +244,12 @@ export default function Trip({ seg: segParam }: { seg?: string }) {
                 <div className="arrange-card">
                   <div><b>✨ Turn your {looseSights} picks into a trip</b><small>We'll put the towns in a clean line (no zig-zags), group places into sensible days, and suggest somewhere to stay. You can change anything.</small></div>
                   <button className="btn-big" onClick={arrange}>Arrange my trip</button>
+                  {house.length > 1 && <button className="btn-soft" onClick={() => confirm(`Copy this arrangement to ${house.filter(x => x.id !== me.id).map(x => x.name.split(' ')[0]).join(', ')}? It replaces their current picks and stays.`) && arrangeAll()}>Arrange for my whole household</button>}
                 </div>
               )}
               <div className="trip-sum"><div><b>{days.length}</b><small>days planned</small></div><div><b>{route.stops.length + unsched.length}</b><small>places</small></div><div><b>~{Math.round(route.km)}</b><small>km travelled</small></div></div>
               {route.warnings.map(w => <div key={w} className="note-box warn">⚠ {w}</div>)}
+              {tips.map(t => <div key={t.title} className={'note-box' + (t.tone === 'busy' ? ' warn' : '')}><b>{t.emoji} {t.title}.</b> {t.text}</div>)}
               {days.map(d => {
                 const stops = route.stops.filter(s => s.day === d)
                 const towns = [...new Set(stops.map(s => s.item.town || s.item.area))]
@@ -264,7 +288,7 @@ export default function Trip({ seg: segParam }: { seg?: string }) {
                   ))}
                 </section>
               )}
-              <div className="stack"><button className="btn-soft wide" onClick={ui.openRoutes}>🗺️ Use a ready-made route</button><button className="btn-soft wide" onClick={() => ui.go('#/discover')}>＋ Add more places</button></div>
+              <div className="stack"><button className="btn-soft wide" onClick={ui.openRoutes}>🗺️ Use a ready-made route</button><button className="btn-soft wide" onClick={() => ui.go('#/discover')}>＋ Add more places</button><button className="btn-soft wide" onClick={() => ui.go('#/print')}>🖨️ Print or save itinerary (PDF)</button></div>
             </>
           )}
         </>
@@ -272,10 +296,11 @@ export default function Trip({ seg: segParam }: { seg?: string }) {
 
       {seg === 'costs' && (
         <>
-          <div className="big-total"><small>Estimated total for {me.name.split(' ')[0]}</small><Money y={b.total} big /><small>{b.days} days · excludes flights</small></div>
+          <div className="big-total"><small>Estimated total for {me.name.split(' ')[0]}</small><Money y={b.total + getFlights(me.notes)} big /><small>{b.days} days · {getFlights(me.notes) ? 'includes your flights' : 'excludes flights'}</small></div>
           <div className="stack-bar">{bars.map(([k, v, c]) => <i key={k} style={{ width: `${(v / sum) * 100}%`, background: c }} title={k} />)}</div>
           <div className="group">
             {bars.map(([k, v, c]) => <div key={k} className="lrow"><span className="dot" style={{ background: c }} /><span className="row-main"><b>{k}</b></span><span className="row-right">{yen(v)}</span></div>)}
+            {getFlights(me.notes) > 0 && <div className="lrow"><span className="dot" style={{ background: 'var(--c5, #888)' }} /><span className="row-main"><b>Flights</b></span><span className="row-right">{yen(getFlights(me.notes))}</span></div>}
           </div>
           {b.warnings.map(w => <div key={w} className="note-box warn">⚠ {w}</div>)}
           <h3 className="s-h">Your dates</h3>
@@ -284,6 +309,10 @@ export default function Trip({ seg: segParam }: { seg?: string }) {
               <label className="fld">Arrive<input type="date" value={me.arrive || ''} onChange={e => updatePerson(me.id, { arrive: e.target.value || null })} /></label>
               <label className="fld">Leave<input type="date" min={me.arrive || undefined} value={me.depart || ''} onChange={e => updatePerson(me.id, { depart: e.target.value || null })} /></label>
             </div>
+            <label className="fld">Flights (your cost, ¥)
+              <input type="number" min={0} inputMode="numeric" placeholder="e.g. 120000" value={getFlights(me.notes) || ''} onChange={e => updatePerson(me.id, { notes: withFlights(me.notes, Math.max(0, Number(e.target.value) || 0)) })} />
+              <small className="muted">Return flights for you. Check the Money tab rate to convert from your own currency.</small>
+            </label>
             <small className="muted">{tripNights(me)} nights. No dates yet? We use the nights you add under Stays.</small>
             <div className="fld">Eating style
               <div className="pills">{(Object.keys(TIER_LABEL) as Tier[]).map(t => <button key={t} className={me.tier === t ? 'on' : ''} onClick={() => updatePerson(me.id, { tier: t })}>{TIER_LABEL[t]}</button>)}</div>
@@ -294,12 +323,13 @@ export default function Trip({ seg: segParam }: { seg?: string }) {
             <>
               <h3 className="s-h">Household</h3>
               <div className="group">
-                {house.map(h => <button key={h.id} className="lrow" onClick={() => ui.openPerson(h.id)}><Avatar name={h.name} size={30} /><span className="row-main"><b>{h.name}</b></span><span className="row-right">{yen(personBreakdown(h, picks, getItem, getStay).total)}</span></button>)}
-                <div className="lrow total"><span className="row-main"><b>Household total</b></span><span className="row-right"><b>{yen(house.reduce((n, h) => n + personBreakdown(h, picks, getItem, getStay).total, 0))}</b></span></div>
+                {house.map(h => <button key={h.id} className="lrow" onClick={() => ui.openPerson(h.id)}><Avatar name={h.name} size={30} /><span className="row-main"><b>{h.name}</b></span><span className="row-right">{yen(personBreakdown(h, picks, getItem, getStay).total + getFlights(h.notes))}</span></button>)}
+                <div className="lrow total"><span className="row-main"><b>Household total</b></span><span className="row-right"><b>{yen(house.reduce((n, h) => n + personBreakdown(h, picks, getItem, getStay).total + getFlights(h.notes), 0))}</b></span></div>
               </div>
             </>
           )}
-          <p className="muted small center">Prices are approximate (2025–26). Check the official site before booking. Flights, shopping and insurance not included.</p>
+          {betweenYen > 0 && <div className="note-box">🚄 Add roughly <b>{yen(betweenYen)}</b> per adult for getting between towns (see Stays), unless a rail pass covers it.</div>}
+          <p className="muted small center">Prices are approximate (2025–26). Check the official site before booking. Shopping and insurance not included.</p>
         </>
       )}
 
@@ -320,6 +350,35 @@ export default function Trip({ seg: segParam }: { seg?: string }) {
 
       {seg === 'stays' && (
         <>
+          {stints.length > 0 && (
+            <>
+              <h3 className="s-h">Where to sleep, based on your days</h3>
+              {needs.map(({ st, add }, i) => (
+                <div key={st.from}>
+                  {st.arriveBy && (
+                    <div className="xfer">
+                      <b>{st.arriveBy.travel.mode.match(/shinkansen/i) ? '🚄' : st.arriveBy.travel.mode.match(/bus/i) ? '🚌' : '🚆'} {st.arriveBy.from} → {st.base}</b>
+                      <span>{st.arriveBy.travel.mode} · {fmtMins(st.arriveBy.travel.mins)} · about {yen(st.arriveBy.travel.yen)} each</span>
+                      <small>{transferTip(st.arriveBy.travel)} Travel on day {st.from}.</small>
+                    </div>
+                  )}
+                  <section className="stint">
+                    <header><b>{st.base}</b><span>Day{st.days > 1 ? `s ${st.from}–${st.to}` : ` ${st.from}`}</span></header>
+                    <small>{st.towns.join(' · ')}</small>
+                    {st.nights === 0 ? <small className="muted">Your last day. No bed needed.</small>
+                      : st.have === st.nights ? <small className="ok">✓ {st.nights} night{st.nights > 1 ? 's' : ''} booked</small>
+                      : st.have > st.nights ? <small className="warnt">You have {st.have} nights here but your plan only needs {st.nights}.</small>
+                      : <div className="stint-add">
+                          <small className="warnt">{st.have ? `${st.have} of ${st.nights}` : `Need ${st.nights}`} night{st.nights > 1 ? 's' : ''} {st.have ? 'covered' : 'here'}</small>
+                          {add && <button className="btn-soft" onClick={() => addStays([add])}>＋ Add {add.nights} night{add.nights > 1 ? 's' : ''}: {STAYS.find(x => x.id === add.stayId)?.name}</button>}
+                        </div>}
+                  </section>
+                </div>
+              ))}
+              {needs.filter(n => n.add).length > 1 && <button className="btn-big" onClick={() => addStays(needs.flatMap(n => n.add ? [n.add] : []))}>Add all suggested stays</button>}
+              <h3 className="s-h">Your stays</h3>
+            </>
+          )}
           {me.stays.length === 0 && <div className="empty-s big"><span>🛏️</span><b>No places to stay yet</b><small>Add hotels, ryokan or apartments to see the cost.</small></div>}
           {me.stays.map((c, i) => {
             const st = STAYS.find(s => s.id === c.stayId)

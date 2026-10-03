@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 
 const SLIDES: { emoji: string; title: string; text: string; art: React.ReactNode }[] = [
   {
@@ -61,6 +61,14 @@ export function TourSlides({ onDone, doneLabel = "Let's go" }: { onDone: () => v
     if (el) el.scrollTo({ left: n * el.clientWidth, behavior: 'smooth' })
   }
   const last = i === SLIDES.length - 1
+  useEffect(() => {
+    const k = (e: KeyboardEvent) => {
+      if (e.key === 'ArrowRight' && i < SLIDES.length - 1) go(i + 1)
+      if (e.key === 'ArrowLeft' && i > 0) go(i - 1)
+    }
+    window.addEventListener('keydown', k)
+    return () => window.removeEventListener('keydown', k)
+  })
   return (
     <div className="tour">
       <div className="tour-track" ref={ref} onScroll={e => { const el = e.currentTarget; const n = Math.round(el.scrollLeft / el.clientWidth); if (n !== i) setI(n) }}>

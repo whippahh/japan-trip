@@ -9,6 +9,12 @@ const ORDER = ['Tokyo', 'Nikko', 'Yokohama & Kamakura', 'Hakone', 'Fuji', 'Nagan
 const HOSTS: Record<string, string[]> = {
   'Yokohama & Kamakura': ['Tokyo'], Nikko: ['Tokyo'], Nara: ['Kyoto', 'Osaka'], 'Kobe & Himeji': ['Osaka'], Fuji: ['Hakone'],
 }
+/** Where you sleep for a given node: its host base if that base is on the trip, else itself. */
+export function baseFor(node: string, nodes: Set<string>): string {
+  if (node === 'Fuji' && !nodes.has('Hakone')) return node
+  return (HOSTS[node] || []).find(h => nodes.has(h)) || node
+}
+export const stayKeyFor = (base: string) => STAY_KEY[base]
 const STAY_KEY: Record<string, keyof typeof STAY_BY_KEY> = { Tokyo: 'tokyo', Hakone: 'hakone', Fuji: 'hakone', Kyoto: 'kyoto', Osaka: 'osaka', Koyasan: 'koyasan', Kumano: 'kumano' }
 const DAY_HOURS = 7
 

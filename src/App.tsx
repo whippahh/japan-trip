@@ -14,6 +14,7 @@ import People from './pages/People'
 import PersonPage from './pages/PersonPage'
 import Plans from './pages/Plans'
 import MapPage from './pages/MapPage'
+import Print from './pages/Print'
 
 const NAV: [string, string, string][] = [
   ['#/', 'Home', '🏠'], ['#/explore', 'Explore', '🧭'], ['#/plans', 'Plans', '🗺️'], ['#/map', 'Route map', '📍'], ['#/calc', 'Calculator', '🧮'],
@@ -38,9 +39,10 @@ export default function App() {
   const [menu, setMenu] = useState(false)
   if (loading) return <div className="splash">🗾 Loading…</div>
   if (!me) return <Onboarding />
+  const path = hash.replace(/^#/, '') || '/'
+  if (path.startsWith('/print')) return <Print which={path.split('/')[2]} />
   if (mode === 'simple') return <SimpleApp />
 
-  const path = hash.replace(/^#/, '') || '/'
   let page
   if (path.startsWith('/person/')) page = <PersonPage id={path.split('/')[2]} />
   else if (path === '/explore') page = <Explore />

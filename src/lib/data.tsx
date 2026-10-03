@@ -12,6 +12,8 @@ interface State {
   households: Household[]; people: Person[]; picks: Pick[]; suggestions: Suggestion[]
   votes: Vote[]; tickets: Ticket[]; checks: CheckRow[]
 }
+/** Shared notes & links live in the suggestions table under this type, so no migration is needed. */
+export const NOTE_TYPE = '__note'
 const empty: State = { households: [], people: [], picks: [], suggestions: [], votes: [], tickets: [], checks: [] }
 const TABLES: TableName[] = ['jt_households', 'jt_people', 'jt_picks', 'jt_suggestions', 'jt_votes', 'jt_tickets', 'jt_checklist']
 
@@ -50,6 +52,7 @@ export interface DataCtx extends State {
   setStays: (person_id: string, stays: StayChoice[]) => Promise<void>
   setPlan: (person_id: string, plan: { picks: { item_id: string; day: number | null }[]; stays: StayChoice[]; replace: boolean; patch?: Partial<Person> }) => Promise<void>
   refresh: () => Promise<void>
+  boardNotes: Suggestion[]
 }
 
 const Ctx = createContext<DataCtx>(null as unknown as DataCtx)
@@ -95,12 +98,14 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
   const setRate = (n: number) => { const v = n > 0 ? n : 110; setRateState(v); lset('jt_rate', String(v)) }
 
   const me = useMemo(() => st.people.find(p => p.id === meId) || null, [st.people, meId])
-  const items = useMemo(() => [...CATALOGUE, ...st.suggestions.map(suggestionToItem)], [st.suggestions])
+  const realSug = useMemo(() => st.suggestions.filter(x => x.type !== NOTE_TYPE), [st.suggestions])
+  const boardNotes = useMemo(() => st.suggestions.filter(x => x.type === NOTE_TYPE), [st.suggestions])
+  const items = useMemo(() => [...CATALOGUE, ...realSug.map(suggestionToItem)], [realSug])
   const itemMap = useMemo(() => new Map(items.map(i => [i.id, i])), [items])
   const stayMap = useMemo(() => new Map(STAYS.map(s => [s.id, s])), [])
 
   const value: DataCtx = {
-    ...st, loading, error, shared: isShared, me, setMe, rate, setRate, items,
+    ...st, suggestions: realSug, boardNotes, loading, error, shared: isShared, me, setMe, rate, setRate, items,
     getItem: id => itemMap.get(id),
     getStay: id => stayMap.get(id),
     personName: id => st.people.find(p => p.id === id)?.name || '—',
