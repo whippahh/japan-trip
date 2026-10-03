@@ -7,6 +7,12 @@ import { TIER_LABEL, type Tier } from '../lib/types'
 
 const STYLE: Record<Tier, string> = { budget: 'Budget (hostels / business hotels)', mid: 'Mid-range (family apartments / 3-star)', splurge: 'Splurge (luxury / private onsen ryokan)' }
 
+export function planEstimate(plan: Plan, getItem: any, getStay: any) {
+  const ex = expandPlan(plan, { tier: plan.tier, nights: {}, selected: defaultSelection(plan), sharing: () => 2 })
+  const { person, picks } = virtualPerson(plan, ex, plan.tier)
+  return personBreakdown({ ...person, arrive: '2027-01-01', depart: `2027-01-${String(1 + ex.nights).padStart(2, '0')}` }, picks, getItem, getStay).total
+}
+
 function PlanCard({ plan, onOpen }: { plan: Plan; onOpen: () => void }) {
   const { getItem, getStay } = useData()
   const est = useMemo(() => {
@@ -30,7 +36,7 @@ function PlanCard({ plan, onOpen }: { plan: Plan; onOpen: () => void }) {
   )
 }
 
-function Customise({ plan, onClose }: { plan: Plan; onClose: () => void }) {
+export function Customise({ plan, onClose, onApplied }: { plan: Plan; onClose: () => void; onApplied?: () => void }) {
   const { me, people, membersOf, getItem, getStay, setPlan, picks } = useData()
   const [tier, setTier] = useState<Tier>(plan.tier)
   const [nights, setNights] = useState<Record<string, number>>(() => Object.fromEntries(plan.stops.map(s => [s.id, s.nights])))
@@ -65,7 +71,7 @@ function Customise({ plan, onClose }: { plan: Plan; onClose: () => void }) {
       await setPlan(p.id, { picks: keepAdults, stays: replace || !existing ? e.stays : [...p.stays, ...e.stays], replace, patch })
     }
     setBusy(false)
-    location.hash = '#/map'
+    if (onApplied) onApplied(); else location.hash = '#/map'
   }
 
   return (

@@ -51,14 +51,16 @@ export function buildRoute(personId: string, picks: Pick[], getItem: (id: string
 
   const days = [...new Set(points.map(p => p.day))].sort((a, b) => a - b)
   const stops: Stop[] = []
-  let prev: Stop | null = null
   for (const d of days) {
+    const prev: Stop | undefined = stops[stops.length - 1]
     const ordered = orderDay(points.filter(p => p.day === d).sort((a, b) => a.item.name.localeCompare(b.item.name)), prev ? prev.at : null)
-    ordered.forEach((p, i) => {
+    for (let i = 0; i < ordered.length; i++) {
+      const p = ordered[i]
       const s: Stop = { n: stops.length + 1, day: d, item: p.item, at: p.at, node: nodeOf(p.item), transit: i === 0 ? transitByDay.get(d) || [] : [] }
-      if (prev) s.travel = travelBetween(prev, s)
-      stops.push(s); prev = s
-    })
+      const before: Stop | undefined = stops[stops.length - 1]
+      if (before) s.travel = travelBetween(before, s)
+      stops.push(s)
+    }
   }
 
   // backtracking check on the sequence of bases (day trips of a single day are fine)

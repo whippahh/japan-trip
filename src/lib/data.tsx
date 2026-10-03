@@ -34,7 +34,7 @@ export interface DataCtx extends State {
   membersOf: (hid: string | null) => Person[]
   addHousehold: (name: string) => Promise<Household>
   renameHousehold: (id: string, name: string) => Promise<void>
-  addPerson: (x: { name: string; household_id: string | null; age_group: AgeGroup; tier?: Tier }) => Promise<Person>
+  addPerson: (x: { name: string; household_id: string | null; age_group: AgeGroup; tier?: Tier; arrive?: string | null; depart?: string | null }) => Promise<Person>
   updatePerson: (id: string, patch: Partial<Person>) => Promise<void>
   deletePerson: (id: string) => Promise<void>
   togglePick: (person_id: string, item_id: string) => Promise<void>
@@ -119,7 +119,7 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
     addPerson: async x => {
       const row: Person = {
         id: uid(), name: x.name.trim(), household_id: x.household_id, age_group: x.age_group,
-        arrive: null, depart: null, tier: x.tier || 'mid', stays: [], notes: null, created_at: new Date().toISOString(),
+        arrive: x.arrive ?? null, depart: x.depart ?? null, tier: x.tier || 'mid', stays: [], notes: null, created_at: new Date().toISOString(),
       }
       await run(s => ({ ...s, people: [...s.people, row] }), () => db.insert('jt_people', row))
       return row

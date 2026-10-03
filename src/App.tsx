@@ -1,7 +1,9 @@
 import { useEffect, useState } from 'react'
 import { useData } from './lib/data'
 import { Avatar } from './components/ui'
-import Welcome from './pages/Welcome'
+import Onboarding from './simple/Onboarding'
+import SimpleApp from './simple/SimpleApp'
+import { setMode, useMode } from './lib/mode'
 import Home from './pages/Home'
 import Explore from './pages/Explore'
 import Calculator from './pages/Calculator'
@@ -32,9 +34,11 @@ function useHash() {
 export default function App() {
   const { me, setMe, people, households, loading, error, shared, rate, setRate } = useData()
   const hash = useHash()
+  const mode = useMode()
   const [menu, setMenu] = useState(false)
   if (loading) return <div className="splash">🗾 Loading…</div>
-  if (!me) return <Welcome />
+  if (!me) return <Onboarding />
+  if (mode === 'simple') return <SimpleApp />
 
   const path = hash.replace(/^#/, '') || '/'
   let page
@@ -81,6 +85,7 @@ export default function App() {
               </optgroup>
             )}
           </select>
+          <button className="btn btn-primary small" onClick={() => setMode('simple')} title="Back to the simple, app-style view">✨ Simple mode</button>
           <button className="btn btn-ghost small" onClick={() => setMe(null)} title={hh(me) || ''}>Not me</button>
         </div>
       </header>

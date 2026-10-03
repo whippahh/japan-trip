@@ -9,9 +9,9 @@ import { yen } from '../components/ui'
 const COLORS = ['#d9432f', '#2f7fb0', '#5f8a4d', '#8a5a9a', '#e08a1e', '#3b8a8a', '#a8324a', '#6b6b8a']
 const esc = (s: string) => s.replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c] as string))
 
-export default function MapPage() {
-  const { me, people, picks, getItem } = useData()
-  const [sel, setSel] = useState<string[]>([me!.id])
+export function RouteMap({ ids, height }: { ids: string[]; height?: number }) {
+  const { people, picks, getItem } = useData()
+  const sel = ids
   const box = useRef<HTMLDivElement>(null)
   const map = useRef<L.Map | null>(null)
   const layer = useRef<L.LayerGroup | null>(null)
@@ -24,10 +24,15 @@ export default function MapPage() {
   useEffect(() => {
     if (!box.current || map.current) return
     const m = L.map(box.current, { scrollWheelZoom: false }).setView([35.4, 136.5], 6)
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 18, attribution: '© OpenStreetMap contributors' }).addTo(m)
+    // CARTO Voyager draws place names in English/Latin script (plain OSM tiles show Japanese).
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+      maxZoom: 19, subdomains: 'abcd', attribution: '© OpenStreetMap contributors © CARTO',
+    }).addTo(m)
     layer.current = L.layerGroup().addTo(m)
     map.current = m
-    return () => { m.remove(); map.current = null; layer.current = null }
+    const ro = typeof ResizeObserver !== 'undefined' ? new ResizeObserver(() => m.invalidateSize()) : null
+    ro?.observe(box.current)
+    return () => { ro?.disconnect(); m.remove(); map.current = null; layer.current = null }
   }, [])
 
   useEffect(() => {
@@ -66,6 +71,16 @@ export default function MapPage() {
     else m.setView([35.4, 136.5], 6)
   }, [routes])
 
+  return <div className="mapbox" ref={box} style={height ? { height } : undefined} />
+}
+
+export default function MapPage() {
+  const { me, people, picks, getItem } = useData()
+  const [sel, setSel] = useState<string[]>([me!.id])
+  const routes = useMemo(
+    () => sel.map(id => people.find(p => p.id === id)).filter(Boolean).map((p, k) => ({ p: p!, color: COLORS[k % COLORS.length], k, r: buildRoute(p!.id, picks, getItem) })),
+    [sel, people, picks, getItem],
+  )
   const toggle = (id: string) => setSel(sel.includes(id) ? sel.filter(x => x !== id) : [...sel, id])
 
   return (
@@ -84,7 +99,7 @@ export default function MapPage() {
         <button className="btn btn-ghost small" onClick={() => setSel(people.map(p => p.id))}>Everyone</button>
         <button className="btn btn-ghost small" onClick={() => setSel([me!.id])}>Just me</button>
       </div>
-      <div className="mapbox" ref={box} />
+      <RouteMap ids={sel} />
       <div className="cols2 routes">
         {routes.map(({ p, color, r }) => (
           <section key={p.id} className="card pad">
