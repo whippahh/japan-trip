@@ -85,7 +85,7 @@ export const PLANS: Plan[] = [
         it('t-kix', 3),
       ] },
     ],
-    tips: ['Under-3s are free at Disney; check USJ height limits for older toddlers.', 'Put the two park days midweek to avoid weekend crowds.'],
+    tips: ['Young kids are cheap or free at Disney; check USJ height limits.', 'Put the two park days midweek to avoid weekend crowds.'],
   },
   {
     id: 'budget-loop', name: 'Budget Loop', tagline: 'Tokyo (+ Kamakura) → Kyoto (+ Nara) → Osaka, 12 nights, mostly free sights',
@@ -142,7 +142,7 @@ export const PLANS: Plan[] = [
         it('t-kix', 2),
       ] },
     ],
-    tips: ['Not toddler-friendly: stairs, steep paths and quiet temple lodgings.', 'Book Koyasan lodging early, as it fills a month or two ahead.'],
+    tips: ['Not for young kids: stairs, steep paths and quiet temple lodgings.', 'Book Koyasan lodging early, as it fills a month or two ahead.'],
   },
   {
     id: 'splurge', name: 'Splurge & Slow', tagline: 'Tokyo → Hakone onsen → Kyoto, 10 nights with private guides and ryokan',

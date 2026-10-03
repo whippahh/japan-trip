@@ -3,8 +3,8 @@ import type { Item, Kind, Prices, Tier } from '../lib/types'
 /*
  * Seed catalogue. ALL PRICES ARE APPROXIMATE (2025–26 research, yen, per person).
  * Verify on the official site before booking — many venues use dynamic pricing.
- * Price tuple: [adult, teen 12–17, child 6–11, little one 0–5]; missing values fall back
- * (teen→adult, child→adult, little one→free).
+ * Price tuple: [adult, teen 12–17, child 6–11, under 6]; missing values fall back
+ * (teen→adult, child→adult, under 6→free).
  */
 const P = (a: number, t?: number, c?: number, k?: number): Prices => ({
   adult: a,
@@ -41,8 +41,8 @@ export const CATALOGUE: Item[] = [
   I('tokyo-disneyland', 'Tokyo Disneyland (1-day)', 'Tokyo', 'Maihama', 'Theme park', 3, 10, P(10900, 9300, 6500, 0), 'Classic Disney park. Dynamic pricing: roughly ¥7,900–¥10,900 for adults. Under-3s free.', { link: 'https://www.tokyodisneyresort.jp/en/', book: 'Buy tickets the day they release (about 2 months ahead).' }),
   I('tokyo-disneysea', 'Tokyo DisneySea (1-day)', 'Tokyo', 'Maihama', 'Theme park', 3, 10, P(10900, 9300, 6500, 0), "Many people's pick for adults and teens: rides and shows themed on ports and myths. Same dynamic pricing as Disneyland.", { link: 'https://www.tokyodisneyresort.jp/en/', book: 'Buy tickets the day they release.' }),
   I('disney-premier', 'Disney Premier Access (per ride)', 'Tokyo', 'Maihama', 'Pass & package', 1, 0.2, P(2000, 2000, 2000, 0), 'Pay to skip the queue on a headline ride. About ¥1,500–¥2,500 per attraction. Buy in the app on the day.', { kind: 'pass' }),
-  I('puroland', 'Sanrio Puroland', 'Tokyo', 'Tama Center', 'Theme park', 1, 5, P(4900, 3900, 3500, 0), 'Indoor Hello Kitty and friends — good for rainy days and little ones.', { link: 'https://www.puroland.jp/en/' }),
-  I('ueno-park', 'Ueno Park & museum precinct', 'Tokyo', 'Ueno', 'Nature & hiking', 1, 2.5, P(0), 'Big park with lakes, temples and museums. Easy for strollers and running kids.'),
+  I('puroland', 'Sanrio Puroland', 'Tokyo', 'Tama Center', 'Theme park', 1, 5, P(4900, 3900, 3500, 0), 'Indoor Hello Kitty and friends — good for rainy days and kids.', { link: 'https://www.puroland.jp/en/' }),
+  I('ueno-park', 'Ueno Park & museum precinct', 'Tokyo', 'Ueno', 'Nature & hiking', 1, 2.5, P(0), 'Big park with lakes, temples and museums. Easy for running kids.'),
   I('ueno-zoo', 'Ueno Zoo', 'Tokyo', 'Ueno', 'Animals & aquarium', 1, 3, P(600, 200, 0, 0), "Japan's oldest zoo. Cheap and hilly in places.", { link: 'https://www.tokyo-zoo.net/english/ueno/' }),
   I('sumida-aquarium', 'Sumida Aquarium (Skytree Town)', 'Tokyo', 'Oshiage', 'Animals & aquarium', 1, 2, P(2500, 1800, 1200, 0), 'Compact indoor aquarium with a famous jellyfish room and penguins. Pair with Skytree.', { link: 'https://www.sumida-aquarium.com/en/' }),
   I('miraikan-odaiba', 'Miraikan science museum & Odaiba waterfront', 'Tokyo', 'Odaiba', 'Museum & art', 1, 3, P(630, 210, 210, 0), 'Hands-on science, a robot show and the life-size Gundam statue nearby.', { link: 'https://www.miraikan.jst.go.jp/en/' }),
@@ -55,7 +55,7 @@ export const CATALOGUE: Item[] = [
   I('sushi-class', 'Family sushi-making class', 'Tokyo', 'Asakusa / Ginza', 'Culture experience', 1, 2, P(9000, 8000, 6000, 0), 'Hands-on class that finishes with eating your own work. Many classes take kids from ~5–6.', { toddlerOk: false }),
   I('sumo-tournament', 'Grand Sumo tournament (Jan / May / Sep)', 'Tokyo', 'Ryogoku', 'Culture experience', 1, 4, P(6500, 6500, 3000, 0), 'Seats from around ¥3,800; the figure is a mid-range chair seat. Only on tournament dates.', { link: 'https://www.sumo.or.jp/EnTicket/', book: 'Check if your dates overlap a tournament; tickets go on sale about a month ahead.', toddlerOk: false }),
   I('ninja-experience', 'Ninja / samurai experience', 'Tokyo', 'Asakusa / Shinjuku', 'Culture experience', 1, 1.5, P(5500, 5500, 4500, 0), 'Shuriken, costumes and a short sword demo. Big hit with ~8–14 year-olds.', { toddlerOk: false }),
-  I('tokyo-private-van', 'Private Tokyo highlights van with English driver-guide', 'Tokyo', 'Citywide', 'Day trip & tour', 1, 8, P(8500, 8500, 8500, 0), 'About ¥60,000 per van for a day; this is the per-person figure for a full van of ~7. Door-to-door with toddler gear.', { ...PK, tier: 'splurge' }),
+  I('tokyo-private-van', 'Private Tokyo highlights van with English driver-guide', 'Tokyo', 'Citywide', 'Day trip & tour', 1, 8, P(8500, 8500, 8500, 0), 'About ¥60,000 per van for a day; this is the per-person figure for a full van of ~7. Door-to-door with kid gear.', { ...PK, tier: 'splurge' }),
   I('round1', 'Round1 bowling, arcade & karaoke', 'Anywhere / Nationwide', 'Round1 branches', 'Pop culture & shopping', 1, 2, P(2500, 2500, 1800, 0), 'All-in-one entertainment venues in every city. Good rainy-day plan for teens.', { tier: 'budget' }),
   I('karaoke', 'Private karaoke room (daytime)', 'Anywhere / Nationwide', 'Karaoke-kan / Big Echo', 'Culture experience', 1, 1.5, P(1500, 1500, 1000, 0), 'Your own room, drinks included. Daytime and early evening are family-friendly.', { tier: 'budget' }),
   I('mt-takao', 'Mt. Takao easy temple hike', 'Tokyo', 'Takao', 'Nature & hiking', 2, 4, P(950, 950, 480, 0), 'Tokyo\'s easy mountain: cable car up, temple, then walk down. Fare shown is the cable car return. ~1 hour from Shinjuku on the Keio line.', { toddlerOk: false }),
@@ -83,7 +83,7 @@ export const CATALOGUE: Item[] = [
   I('owakudani', 'Owakudani volcanic valley (black eggs)', 'Hakone & Fuji', 'Hakone', 'Nature & hiking', 1, 2, P(500, 500, 500, 0), 'Sulphur vents and eggs boiled black in the springs. Ropeway included in the Freepass. Closes if gas levels are high.'),
   I('ashi-cruise', 'Lake Ashi pirate ship cruise', 'Hakone & Fuji', 'Lake Ashi', 'Day trip & tour', 1, 1, P(0, 0, 0, 0), 'Included in the Hakone Freepass (about ¥1,200 if paid separately). Fuji views on clear days.'),
   I('yunessun', 'Yunessun spa resort (swimsuit onsen)', 'Hakone & Fuji', 'Kowakien', 'Onsen & wellness', 1, 3, P(3000, 3000, 1500, 0), 'Swimsuit-friendly onsen with wine, coffee and green-tea baths — an easy first onsen for mixed families and tattoos.'),
-  I('fuji-q', 'Fuji-Q Highland (thrill rides)', 'Hakone & Fuji', 'Kawaguchiko', 'Theme park', 3, 8, P(6800, 5500, 4500, 0), 'Record-breaking coasters and a Thomas Land for little ones, under Mt Fuji. Price is a Free Pass. Check the height limits.', { link: 'https://www.fujiq.jp/en/', needs: 't-fuji-bus' }),
+  I('fuji-q', 'Fuji-Q Highland (thrill rides)', 'Hakone & Fuji', 'Kawaguchiko', 'Theme park', 3, 8, P(6800, 5500, 4500, 0), 'Record-breaking coasters and a Thomas Land for younger kids, under Mt Fuji. Price is a Free Pass. Check the height limits.', { link: 'https://www.fujiq.jp/en/', needs: 't-fuji-bus' }),
   I('chureito', 'Chureito Pagoda & Lake Kawaguchi views', 'Hakone & Fuji', 'Fujiyoshida', 'Views', 2, 2, P(0), 'The postcard Fuji-and-pagoda view. About 400 steps — carrier only for little ones.', { toddlerOk: false, needs: 't-fuji-bus' }),
   I('fuji-hakone-van', 'Mt Fuji & Hakone small-group day tour', 'Hakone & Fuji', 'From Tokyo', 'Day trip & tour', 1, 11, P(16000, 16000, 10000, 0), 'Guided day trip with transport — easiest way to see both in a day. Long days; check toddler policies.', { ...PK, toddlerOk: false }),
   I('t-fuji-bus', 'Shinjuku ⇄ Kawaguchiko highway bus (return)', 'Hakone & Fuji', 'Kawaguchiko', 'Transport', 1, 4, P(4000, 4000, 2000, 0), 'About 2 hours each way. Reserve seats online.', TR),
@@ -94,14 +94,14 @@ export const CATALOGUE: Item[] = [
   I('t-nikko', 'Asakusa ⇄ Nikko (Tobu line, return)', 'Nikko', 'Nikko', 'Transport', 1, 4, P(4500, 4500, 2250, 0), 'About 2 hours each way. Approximate; add local bus fares in Nikko.', TR),
 
   // ───────────── KYOTO ─────────────
-  I('fushimi-inari', 'Fushimi Inari Shrine (torii gate trail)', 'Kyoto', 'Fushimi', 'Temple & shrine', 2, 3, P(0), 'Thousands of vermilion gates. Open 24 hours and free. Go at dawn or after dark. Many stairs — carrier, not a stroller.', { link: 'https://inari.jp/en/' }),
+  I('fushimi-inari', 'Fushimi Inari Shrine (torii gate trail)', 'Kyoto', 'Fushimi', 'Temple & shrine', 2, 3, P(0), 'Thousands of vermilion gates. Open 24 hours and free. Go at dawn or after dark. Many stairs.', { link: 'https://inari.jp/en/' }),
   I('fushimi-hike-tour', 'Guided Fushimi Inari sunrise hike', 'Kyoto', 'Fushimi', 'Day trip & tour', 2, 3, P(7500, 7500, 4500, 0), 'Small-group guide who knows the quiet side paths and the fox-shrine stories. Often includes a snack.', { ...PK, toddlerOk: false }),
   I('kiyomizu', 'Kiyomizu-dera & Higashiyama streets', 'Kyoto', 'Higashiyama', 'Temple & shrine', 2, 3, P(500, 500, 200, 0), 'Wooden stage over the hillside with old-town lanes of sweets and souvenirs. Steep and busy.', { link: 'https://www.kiyomizudera.or.jp/en/' }),
   I('kinkakuji', 'Kinkaku-ji (Golden Pavilion)', 'Kyoto', 'Kita-ku', 'Temple & shrine', 1, 1, P(500, 500, 300, 0), 'The gold-leaf pavilion across the pond. A quick one-way loop.', { link: 'https://www.shokoku-ji.jp/en/kinkakuji/' }),
   I('ginkakuji', 'Ginkaku-ji & Philosopher\'s Path', 'Kyoto', 'Higashiyama', 'Temple & shrine', 1, 2, P(600, 600, 300, 0), 'Zen garden and a canal-side walk to Nanzen-ji. Some sources list higher entry — check.'),
   I('nijo-castle', 'Nijo Castle', 'Kyoto', 'Nakagyo', 'Castle & history', 1, 2, P(1300, 400, 400, 0), 'Shogun palace with "nightingale floors" that squeak to catch intruders.', { link: 'https://nijo-jocastle.city.kyoto.lg.jp/?lang=en' }),
   I('ryoanji', 'Ryoan-ji rock garden', 'Kyoto', 'Kita-ku', 'Temple & shrine', 1, 1, P(500, 500, 300, 0), 'Famous minimalist Zen garden. Quick and good for a quiet moment.'),
-  I('arashiyama-bamboo', 'Arashiyama Bamboo Grove & Togetsukyo Bridge', 'Kyoto', 'Arashiyama', 'Nature & hiking', 1, 2, P(0), 'Free. Very crowded after 9am; stroller-friendly.'),
+  I('arashiyama-bamboo', 'Arashiyama Bamboo Grove & Togetsukyo Bridge', 'Kyoto', 'Arashiyama', 'Nature & hiking', 1, 2, P(0), 'Free. Very crowded after 9am; easy walking.'),
   I('tenryuji', 'Tenryu-ji Zen garden', 'Kyoto', 'Arashiyama', 'Temple & shrine', 1, 1, P(500, 500, 300, 0), 'Garden entrance connects straight to the bamboo grove.'),
   I('monkey-park', 'Iwatayama Monkey Park', 'Kyoto', 'Arashiyama', 'Animals & aquarium', 2, 1.5, P(1200, 1200, 800, 0), '20-minute uphill walk to feed wild macaques and see the city. Stairs and slopes — not for strollers.', { toddlerOk: false }),
   I('sagano-train', 'Sagano Romantic Train', 'Kyoto', 'Arashiyama', 'Day trip & tour', 1, 1, P(880, 880, 440, 0), 'A 25-minute scenic open-sided train through the river gorge. Book ahead for autumn leaves.', { link: 'https://www.sagano-kanko.co.jp/en/' }),
@@ -113,7 +113,7 @@ export const CATALOGUE: Item[] = [
   I('tea-ceremony', 'Tea ceremony experience', 'Kyoto', 'Gion / Higashiyama', 'Culture experience', 1, 1, P(4000, 4000, 2500, 0), 'Matcha and wagashi with a host. Quiet, formal — best for kids who can sit still ~45 minutes.', { toddlerOk: false }),
   I('maiko-dinner', 'Maiko / geiko dinner', 'Kyoto', 'Gion', 'Culture experience', 1, 2, P(25000, 25000, 25000, 0), 'Kaiseki dinner with a performance. Splurge. Many venues require older children.', { toddlerOk: false, tier: 'splurge' }),
   I('kyoto-cooking', 'Nishiki market tour + cooking class', 'Kyoto', 'Nakagyo', 'Culture experience', 1, 4, P(9000, 9000, 6000, 0), 'Shop with the chef, then cook a Japanese meal.', { toddlerOk: false }),
-  I('kyoto-railway-museum', 'Kyoto Railway Museum', 'Kyoto', 'Shimogyo', 'Museum & art', 1, 3, P(1500, 1300, 500, 0), 'Great for trainspotters and toddlers. Steam-train ride and a big hands-on hall.', { link: 'https://www.kyotorailwaymuseum.jp/en/' }),
+  I('kyoto-railway-museum', 'Kyoto Railway Museum', 'Kyoto', 'Shimogyo', 'Museum & art', 1, 3, P(1500, 1300, 500, 0), 'Great for trainspotters and young kids. Steam-train ride and a big hands-on hall.', { link: 'https://www.kyotorailwaymuseum.jp/en/' }),
   I('kyoto-aquarium', 'Kyoto Aquarium', 'Kyoto', 'Shimogyo', 'Animals & aquarium', 1, 2, P(2400, 1800, 1200, 0), 'Compact city aquarium with otters and a dolphin stadium. Easy rainy-day option.', { link: 'https://www.kyoto-aquarium.com/eng/' }),
   I('toei-kyoto-studio', 'Toei Kyoto Studio Park', 'Kyoto', 'Uzumasa', 'Theme park', 1, 3, P(2800, 2800, 1400, 0), 'Samurai film set. Reopened with a more adult-oriented concept — check current price and kid suitability.', { toddlerOk: false }),
   I('kurama-kibune', 'Kurama–Kibune mountain temple hike', 'Kyoto', 'Kurama', 'Nature & hiking', 3, 4, P(500, 500, 250, 0), 'Forest trail between two mountain villages, ending in a riverside restaurant. Rooty, steep in places.', { toddlerOk: false }),
@@ -145,7 +145,7 @@ export const CATALOGUE: Item[] = [
   I('t-kix', 'Kansai Airport ⇄ Osaka (Nankai Rapi:t, one way)', 'Osaka', 'Kansai Airport', 'Transport', 1, 0.7, P(1450, 1450, 730, 0), 'Limited express to Namba.', TR),
 
   // ───────────── NARA ─────────────
-  I('nara-deer', 'Nara Park deer', 'Nara', 'Nara Park', 'Animals & aquarium', 1, 2, P(200, 200, 200, 0), 'Hundreds of bowing deer. Crackers cost about ¥200. Deer can bite — keep toddlers back.', { needs: 't-nara' }),
+  I('nara-deer', 'Nara Park deer', 'Nara', 'Nara Park', 'Animals & aquarium', 1, 2, P(200, 200, 200, 0), 'Hundreds of bowing deer. Crackers cost about ¥200. Deer can bite — keep little kids back.', { needs: 't-nara' }),
   I('todaiji', 'Todai-ji Great Buddha Hall', 'Nara', 'Nara Park', 'Temple & shrine', 1, 1.5, P(800, 800, 400, 0), 'The enormous bronze Buddha in a vast wooden hall. The price has risen in recent years — check.', { link: 'https://www.todaiji.or.jp/en/', needs: 't-nara' }),
   I('kasuga-taisha', 'Kasuga Taisha lantern shrine', 'Nara', 'Nara Park', 'Temple & shrine', 1, 1.5, P(500, 500, 500, 0), 'Thousands of lanterns in a cedar forest.', { needs: 't-nara' }),
   I('naramachi', 'Naramachi old town & mochi', 'Nara', 'Naramachi', 'Neighbourhood & street life', 1, 2, P(1000, 1000, 500, 0), 'Merchant houses, cafes and the famous fast-pounded mochi stall.', { needs: 't-nara' }),

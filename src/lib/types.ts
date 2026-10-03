@@ -5,7 +5,7 @@ export const AGE_LABEL: Record<AgeGroup, string> = {
   adult: 'Adult (18+)',
   teen: 'Teen (12–17)',
   child: 'Child (6–11)',
-  toddler: 'Little one (0–5)',
+  toddler: 'Under 6',
 }
 export const TIER_LABEL: Record<Tier, string> = {
   budget: 'Budget eater',

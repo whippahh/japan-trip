@@ -71,7 +71,7 @@ export default function App() {
           <Avatar name={me.name} />
           <select
             value={me.id}
-            title="Who are you acting as? Parents can switch to manage little ones."
+            title="Who are you acting as? Parents can switch to manage kids."
             onChange={e => setMe(e.target.value)}
           >
             {households.map(h => (

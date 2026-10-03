@@ -107,7 +107,7 @@ export default function PersonCalc({ person }: { person: Person }) {
           <tfoot><tr><td><b>Total (excl. flights)</b></td><td className="r"><Money y={b.total} big /></td></tr></tfoot>
         </table>
         {b.warnings.map(w => <p key={w} className="warn-line">⚠ {w}</p>)}
-        <p className="muted small">Little ones: room share is free; set "Sharing" to the number of paying people. Flights, shopping, souvenirs and insurance are not included.</p>
+        <p className="muted small">Under-6s: room share is free; set "Sharing" to the number of paying people. Flights, shopping, souvenirs and insurance are not included.</p>
       </section>
     </div>
   )

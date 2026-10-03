@@ -27,6 +27,8 @@ export default function Today() {
   const steps: { icon: string; title: string; sub: string; go: () => void }[] = []
   if (!me.arrive) steps.push({ icon: '🗓️', title: 'Set your dates', sub: 'Starts the countdown and the cost calculator', go: () => ui.openPerson(me.id) })
   if (house.length < 2 && !people.some(p => p.household_id === me.household_id && p.id !== me.id)) steps.push({ icon: '👨‍👩‍👧', title: 'Add your household', sub: 'Partner, kids, parents: plan for everyone', go: () => ui.go('#/group') })
+  const loose = mine.filter(k => k.day == null).length
+  if (loose >= 2) steps.push({ icon: '✨', title: `Arrange your ${loose} picks into a trip`, sub: 'We order the towns and group the days for you', go: () => ui.go('#/trip/plan') })
   if (mine.length === 0) steps.push({ icon: '🧭', title: 'Pick your first places', sub: 'Tap the ♡ on anything you like', go: () => ui.go('#/discover') })
   if (mine.length === 0) steps.push({ icon: '🗺️', title: 'Or start from a ready-made route', sub: 'A clean line through Japan you can tweak', go: ui.openRoutes })
   if (me.stays.length === 0) steps.push({ icon: '🛏️', title: 'Add where you\'re staying', sub: 'Hotels, ryokan and apartments with prices', go: () => ui.go('#/trip/stays') })

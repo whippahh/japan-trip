@@ -241,3 +241,8 @@ button.lrow:active, a.lrow:active { background: var(--fill); }
 .stepper-wrap { margin-left: auto; display: inline-flex; align-items: center; gap: 6px; } .cust-note { margin: 0; padding: 0 16px 6px; }
 .cust-row { display: flex; align-items: center; gap: 12px; width: 100%; border: 0; background: none; padding: 9px 16px; text-align: left; border-top: .5px solid var(--sep); } .cust-row:not(.on) .stop-main b { color: var(--label2); }
 .circle.sm { width: 24px; height: 24px; flex: none; }
+
+.arrange-card { background: linear-gradient(135deg, #1f2d4d, #3a2f5c 60%, #a8324a); color: #fff; border-radius: var(--r); padding: 16px; display: flex; flex-direction: column; gap: 12px; box-shadow: var(--shadow); } .arrange-card small { display: block; color: rgba(255,255,255,.85); margin-top: 4px; } .arrange-card .btn-big { background: #fff; color: #1f2d4d !important; box-shadow: none; }
+.note-box.ok { background: rgba(47,163,107,.15); }
+
+.adv-photo { height: 150px; } .adv-photo .photo-emoji { font-size: 3rem; }

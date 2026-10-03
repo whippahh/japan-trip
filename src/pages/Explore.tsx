@@ -3,6 +3,7 @@ import { useData } from '../lib/data'
 import { AREAS, AREA_META, TYPES } from '../data/meta'
 import { Dots, Money, PickButtons, Votes, areaMeta, mapsUrl, typeEmoji, yen } from '../components/ui'
 import { itemPrice } from '../lib/pricing'
+import { ItemPhoto } from '../components/Photo'
 import type { Item, Kind } from '../lib/types'
 
 const KINDS: [Kind | 'all', string][] = [
@@ -19,6 +20,7 @@ export function ItemCard({ item }: { item: Item }) {
   const needPicked = need && me ? picks.some(k => k.person_id === me.id && k.item_id === need.id) : true
   return (
     <article className="card item">
+      <ItemPhoto item={item} className="adv-photo"><div className="tile-shade" /></ItemPhoto>
       <div className="band" style={{ background: meta.color }}>
         <span>{typeEmoji(item.type)} {item.type}</span>
         <span>{meta.emoji} {item.town || item.area}</span>
@@ -38,7 +40,7 @@ export function ItemCard({ item }: { item: Item }) {
           {' · '}Under 6 {yen(p.toddler ?? 0)}
         </div>
         <div className="tags">
-          {item.toddlerOk ? <span className="tag ok">👶 Toddler OK</span> : <span className="tag no">🚫 Not toddler-friendly</span>}
+          {item.toddlerOk ? <span className="tag ok">🧒 Kid-friendly</span> : <span className="tag no">🚫 Not for young kids</span>}
           {item.adultsOnly && <span className="tag no">🔞 Adults only</span>}
           {item.kind !== 'sight' && <span className="tag">{item.kind === 'package' ? '📦 Package' : item.kind === 'pass' ? '🎟️ Pass' : '🚅 Transit'}</span>}
           {item.verified && <span className="tag ok">✔ Price checked</span>}
@@ -128,7 +130,7 @@ export default function Explore() {
             <select value={maxInt} onChange={e => setMaxInt(Number(e.target.value))}>
               <option value={1}>Easy only</option><option value={2}>Up to moderate</option><option value={3}>Anything</option>
             </select></label>
-          <label className="check"><input type="checkbox" checked={toddler} onChange={e => setToddler(e.target.checked)} /> Toddler-friendly</label>
+          <label className="check"><input type="checkbox" checked={toddler} onChange={e => setToddler(e.target.checked)} /> Kid-friendly</label>
           <label className="check"><input type="checkbox" checked={freeOnly} onChange={e => setFreeOnly(e.target.checked)} /> Free for me</label>
           <button className="btn btn-ghost small" onClick={clear}>Reset</button>
         </div>

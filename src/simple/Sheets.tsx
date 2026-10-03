@@ -74,7 +74,7 @@ export function ItemSheet({ id, onClose }: { id: string | null; onClose: () => v
       </div>
       <p className="lead-text">{item.blurb}</p>
       <div className="tags">
-        {item.toddlerOk ? <span className="tag ok">👶 Little-one friendly</span> : <span className="tag no">🚫 Not for little ones</span>}
+        {item.toddlerOk ? <span className="tag ok">🧒 Kid-friendly</span> : <span className="tag no">🚫 Not for young kids</span>}
         {item.adultsOnly && <span className="tag no">🔞 Adults only</span>}
         {item.verified && <span className="tag ok">✔ Price checked</span>}
         {item.kind !== 'sight' && <span className="tag">{item.kind === 'package' ? '📦 Package' : item.kind === 'pass' ? '🎟️ Pass' : '🚅 Getting there'}</span>}
@@ -224,7 +224,7 @@ export function ProfileSheet({ open, onClose }: { open: boolean; onClose: () => 
       {mine.length > 1 && (
         <>
           <h4 className="sec">Planning as</h4>
-          <p className="muted small">Parents can switch to a little one's profile to plan for them.</p>
+          <p className="muted small">Parents can switch to a kid's profile to plan for them.</p>
           <div className="who-row">
             {mine.map(p => (
               <button key={p.id} className={'who-chip' + (p.id === me.id ? ' on' : '')} onClick={() => setMe(p.id)}><Avatar name={p.name} size={30} /><span>{p.name.split(' ')[0]}</span></button>
@@ -242,7 +242,7 @@ export function ProfileSheet({ open, onClose }: { open: boolean; onClose: () => 
         <Row icon="💴" title="Yen per A$1" right={<input className="rate-in" type="number" min={50} max={300} value={rate} onChange={e => setRate(Number(e.target.value))} />} />
       </div>
       <button className="btn-soft wide" onClick={() => { setMe(null); onClose() }}>Not {me.name.split(' ')[0]}? Switch person</button>
-      <p className="muted small center">{shared ? 'Shared with everyone who has the link.' : 'Demo mode: saved only in this browser.'} Please never put passport numbers or card details here. Photos from Wikipedia/Wikimedia Commons. Map © OpenStreetMap contributors © CARTO.</p>
+      <p className="muted small center">{shared ? 'Shared with everyone who has the link.' : 'Demo mode: saved only in this browser.'} Please never put passport numbers or card details here. Photos from Wikipedia/Wikimedia Commons. Map tiles © Esri, HERE, Garmin, OpenStreetMap contributors.</p>
     </Sheet>
   )
 }

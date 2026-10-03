@@ -27,7 +27,7 @@ export const CHECKLIST: CheckItem[] = [
   {
     key: 'flights', emoji: '✈️', label: 'Flights booked',
     why: 'Fly into one city and out of another (e.g. Tokyo in, Osaka out) to avoid doubling back.',
-    tips: ['Look at multi-city / open-jaw fares: they are often the same price as a return.', 'Tokyo Haneda is closer to the city than Narita; Osaka Kansai is the usual way out.', 'Sit together: book seats early if you have little ones.'],
+    tips: ['Look at multi-city / open-jaw fares: they are often the same price as a return.', 'Tokyo Haneda is closer to the city than Narita; Osaka Kansai is the usual way out.', 'Sit together: book seats early so you sit together.'],
     links: [{ label: 'Google Flights', url: 'https://www.google.com/travel/flights' }],
   },
   {
@@ -105,10 +105,10 @@ export const CHECKLIST: CheckItem[] = [
     tips: ['Slip-on shoes make life easier.', 'Pack spare socks without holes: you will take your shoes off a lot.'],
   },
   {
-    key: 'kidgear', emoji: '🍼', label: 'Baby carrier / compact stroller and snacks sorted',
+    key: 'kidgear', emoji: '🎒', label: 'Kid gear and snacks sorted',
     who: ['toddler'],
-    why: 'Stairs are everywhere and lifts can be a detour. A carrier or very compact stroller is the easiest.',
-    tips: ['Convenience stores sell nappies, snacks and baby food.', 'Most big stations and department stores have nursing rooms.'],
+    why: 'Stairs are everywhere and lifts can be a detour. Pack light and compact.',
+    tips: ['Convenience stores sell snacks and kid essentials.', 'Big stations and department stores have rest areas and family toilets.'],
     links: [{ label: 'Travelling with kids (JNTO)', url: 'https://www.japan.travel/en/plan/' }],
   },
 ]

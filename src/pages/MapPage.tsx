@@ -24,9 +24,9 @@ export function RouteMap({ ids, height }: { ids: string[]; height?: number }) {
   useEffect(() => {
     if (!box.current || map.current) return
     const m = L.map(box.current, { scrollWheelZoom: false }).setView([35.4, 136.5], 6)
-    // CARTO Voyager draws place names in English/Latin script (plain OSM tiles show Japanese).
-    L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
-      maxZoom: 19, subdomains: 'abcd', attribution: '© OpenStreetMap contributors © CARTO',
+    // Esri World Street Map: free (no key) and labels places in English. CARTO/OSM tiles need a key or show Japanese.
+    L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}', {
+      maxZoom: 18, attribution: 'Tiles © Esri, HERE, Garmin, OpenStreetMap contributors',
     }).addTo(m)
     layer.current = L.layerGroup().addTo(m)
     map.current = m

@@ -92,7 +92,7 @@ export default function Discover() {
             const xs = sights.filter(i => i.area === a).slice(0, 10)
             return xs.length ? <Rail key={a} title={`${AREA_META[a].emoji} ${a}`} sub={`${sights.filter(i => i.area === a).length} things to do`} onMore={() => pickArea(a)}>{xs.map(i => <ItemTile key={i.id} item={i} rail />)}</Rail> : null
           })}
-          {kids.length > 0 && <Rail title="👶 Easy with little ones" onMore={() => { setToddler(true); setMaxInt(1) }}>{kids.map(i => <ItemTile key={i.id} item={i} rail />)}</Rail>}
+          {kids.length > 0 && <Rail title="🧒 Easy with kids" onMore={() => { setToddler(true); setMaxInt(1) }}>{kids.map(i => <ItemTile key={i.id} item={i} rail />)}</Rail>}
           {cheap.length > 0 && <Rail title="🆓 Free for you" onMore={() => setFree(true)}>{cheap.map(i => <ItemTile key={i.id} item={i} rail />)}</Rail>}
           {packages.length > 0 && <Rail title="📦 Tours & packages" onMore={() => setKind('package')}>{packages.map(i => <ItemTile key={i.id} item={i} rail />)}</Rail>}
         </>
@@ -114,7 +114,7 @@ export default function Discover() {
         <Segmented value={String(maxInt) as '1' | '2' | '3'} onChange={v => setMaxInt(Number(v))} options={[['1', 'Easy only'], ['2', 'Up to moderate'], ['3', 'Anything']]} />
         <h4 className="sec">Good to know</h4>
         <div className="group">
-          <button className="lrow" onClick={() => setToddler(!toddler)}><span className="row-main"><b>👶 Little-one friendly</b></span><span className={'toggle' + (toddler ? ' on' : '')}><i /></span></button>
+          <button className="lrow" onClick={() => setToddler(!toddler)}><span className="row-main"><b>🧒 Kid-friendly</b></span><span className={'toggle' + (toddler ? ' on' : '')}><i /></span></button>
           <button className="lrow" onClick={() => setFree(!free)}><span className="row-main"><b>🆓 Free for me</b></span><span className={'toggle' + (free ? ' on' : '')}><i /></span></button>
         </div>
       </Sheet>

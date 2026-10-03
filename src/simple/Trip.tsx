@@ -14,6 +14,7 @@ import { TIER_LABEL, type Tier } from '../lib/types'
 import { Icon, Segmented, Sheet, Stepper, Toggle } from './kit'
 import { useUI } from './ctx'
 import { hrs } from './Tiles'
+import { autoArrange } from '../lib/autoplan'
 
 type Seg = 'plan' | 'costs' | 'map' | 'stays'
 
@@ -165,10 +166,11 @@ function StaysSheet({ open, onClose }: { open: boolean; onClose: () => void }) {
 }
 
 export default function Trip({ seg: segParam }: { seg?: string }) {
-  const { me, people, picks, getItem, getStay, updatePerson, setStays, setPickDay, membersOf, setMe } = useData()
+  const { me, people, picks, getItem, getStay, updatePerson, setStays, setPickDay, membersOf, setMe, setPlan } = useData()
   const ui = useUI()
   const [stays, setStaySheet] = useState(false)
   const [mapIds, setMapIds] = useState<string[] | null>(null)
+  const [undo, setUndo] = useState<{ picks: { item_id: string; day: number | null }[]; stays: any; note: string } | null>(null)
   const seg: Seg = (['plan', 'costs', 'map', 'stays'] as string[]).includes(segParam || '') ? (segParam as Seg) : 'plan'
   const route = useMemo(() => me ? buildRoute(me.id, picks, getItem) : null, [me, picks, getItem])
   if (!me || !route) return null
@@ -180,6 +182,16 @@ export default function Trip({ seg: segParam }: { seg?: string }) {
   const go = (s: Seg) => { location.hash = '#/trip/' + s }
   const dayDate = (d: number) => me.arrive ? fmtDate(addDays(me.arrive, d - 1)) : null
   const ids = mapIds || [me.id]
+  const looseSights = unsched.filter(i => i && (i.kind === 'sight' || i.kind === 'package')).length
+  const arrange = async () => {
+    const paying = Math.max(1, house.filter(p => p.age_group !== 'toddler').length)
+    const a = autoArrange(me, picks, getItem, paying)
+    if (!a) return
+    const mineNow = picks.filter(k => k.person_id === me.id)
+    const all = mineNow.map(k => ({ item_id: k.item_id, day: a.days.find(d => d.item_id === k.item_id)?.day ?? k.day }))
+    await setPlan(me.id, { picks: all, stays: a.stays, replace: false })
+    setUndo({ picks: mineNow.map(k => ({ item_id: k.item_id, day: k.day })), stays: me.stays, note: `Arranged ${a.totalDays} days across ${a.bases.map(b => b.name).join(' → ')}${me.stays.length ? '' : ', with suggested places to stay'}.` })
+  }
   const bars: [string, number, string][] = [['Sights', b.sights, 'var(--c1)'], ['Stays', b.accommodation, 'var(--c2)'], ['Food', b.food, 'var(--c3)'], ['Transport', b.transport, 'var(--c4)']]
   const sum = Math.max(1, bars.reduce((n, x) => n + x[1], 0))
 
@@ -196,12 +208,22 @@ export default function Trip({ seg: segParam }: { seg?: string }) {
         <>
           {nothing ? (
             <div className="empty-s big">
-              <span>🗺️</span><b>Your trip is empty</b><small>Start with a ready-made route, or pick places you like.</small>
+              <span>🗺️</span><b>Your trip is empty</b><small>Heart a few places in Discover and we'll arrange them into a trip for you. Or start with a ready-made route.</small>
               <button className="btn-big" onClick={ui.openRoutes}>Choose a ready-made route</button>
               <button className="btn-soft" onClick={() => ui.go('#/discover')}>Browse places</button>
             </div>
           ) : (
             <>
+              {undo && (
+                <div className="note-box ok">✅ {undo.note} It's a starting point: tap any place to change its day.{' '}
+                  <button className="linkbtn" onClick={async () => { await setPlan(me.id, { picks: undo.picks, stays: undo.stays, replace: false }); setUndo(null) }}>Undo</button></div>
+              )}
+              {looseSights > 0 && (
+                <div className="arrange-card">
+                  <div><b>✨ Turn your {looseSights} picks into a trip</b><small>We'll put the towns in a clean line (no zig-zags), group places into sensible days, and suggest somewhere to stay. You can change anything.</small></div>
+                  <button className="btn-big" onClick={arrange}>Arrange my trip</button>
+                </div>
+              )}
               <div className="trip-sum"><div><b>{days.length}</b><small>days planned</small></div><div><b>{route.stops.length + unsched.length}</b><small>places</small></div><div><b>~{Math.round(route.km)}</b><small>km travelled</small></div></div>
               {route.warnings.map(w => <div key={w} className="note-box warn">⚠ {w}</div>)}
               {days.map(d => {
